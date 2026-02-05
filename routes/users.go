@@ -38,3 +38,24 @@ func getUsers(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"users": users})
 }
+
+
+func login(context *gin.Context){
+	var user models.User
+
+	err := context.ShouldBindJSON(&user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"Message": "Couldnt parse request data"})
+		return
+	}
+
+
+	err = user.ValidateCredentials()
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Credential errors!"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"Message": "Login Successfull!"})
+}

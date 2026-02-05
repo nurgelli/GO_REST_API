@@ -3,6 +3,8 @@ package models
 import (
 	"GO_REST_API/db"
 	"GO_REST_API/utils"
+	"errors"
+	"fmt"
 )
 
 type User struct {
@@ -61,4 +63,28 @@ func GetAllUsers() ([]User, error){
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+func (user User) ValidateCredentials() error {
+	query := "SELECT password FROM users WHERE email = ?"
+	row := db.DB.QueryRow(query, user.Email)
+
+	var retrievedPass string
+	err := row.Scan(&retrievedPass) // in Scan have to be used &varName - without can be cause to error
+	fmt.Println(retrievedPass)
+
+	if err != nil {
+		return errors.New("Credential errors!")
+	}
+
+	validPassword := utils.ComparePassword(user.Password, retrievedPass)
+	fmt.Println(validPassword)
+
+
+	if !validPassword {
+		return errors.New("Credential errors!")
+	}
+
+	return nil
+
 }
