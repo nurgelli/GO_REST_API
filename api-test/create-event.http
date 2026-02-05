@@ -1,0 +1,9 @@
+POST http://localhost:8080/events 
+content-type: application/json
+
+
+{
+    "name": "GO",
+    "description": "Learning Go in depth",
+    "Location": "Turkmenistan"
+}
