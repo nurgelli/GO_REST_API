@@ -1,8 +1,19 @@
 package main
 
-import "fmt"
+import (
+
+	"github.com/gin-gonic/gin"
+)
 
 func main()  {
-	fmt.Print("Hello World")
+	server := gin.Default()
+
+	server.GET("/events",  getAllEvents)
+
+	server.Run(":8080")
+	
+}
+
+func getAllEvents(context *gin.Context) {
 	
 }
