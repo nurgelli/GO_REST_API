@@ -4,7 +4,6 @@ import (
 	"GO_REST_API/db"
 	"GO_REST_API/utils"
 	"errors"
-	"fmt"
 )
 
 type User struct {
@@ -65,26 +64,23 @@ func GetAllUsers() ([]User, error){
 	return users, nil
 }
 
-func (user User) ValidateCredentials() error {
-	query := "SELECT password FROM users WHERE email = ?"
+func (user *User) ValidateCredentials() error {
+	query := "SELECT id, password FROM users WHERE email = ?"
 	row := db.DB.QueryRow(query, user.Email)
 
 	var retrievedPass string
-	err := row.Scan(&retrievedPass) // in Scan have to be used &varName - without can be cause to error
-	fmt.Println(retrievedPass)
+	err := row.Scan(&user.ID, &retrievedPass) // in Scan have to be used &varName - without can be cause to error
+	// fmt.Println(retrievedPass)
 
 	if err != nil {
 		return errors.New("Credential errors!")
 	}
 
-	validPassword := utils.ComparePassword(user.Password, retrievedPass)
-	fmt.Println(validPassword)
-
-
+	validPassword := utils.ComparePassword(user.Password, retrievedPass) // user.Password is got from user - like 1234
+	// fmt.Println(validPassword)
 	if !validPassword {
 		return errors.New("Credential errors!")
 	}
-
 	return nil
 
 }
