@@ -2,7 +2,6 @@ package routes
 
 import (
 	"GO_REST_API/models"
-	"GO_REST_API/utils"
 	"net/http"
 	"strconv"
 
@@ -31,26 +30,15 @@ func getEvent(context *gin.Context) {
 	context.JSON(http.StatusOK, event)
 }
 func createEvent(context *gin.Context) {
-	token := context.Request.Header.Get("Authorization")
-
-	if token == "" {
-		context.JSON(http.StatusUnauthorized, gin.H{"Message": "Not authorized"})
-		return
-	}
-
-	userId, err := utils.VerifyToken(token)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"Message": "Not authorized"})
-		return 
-	}
-
 	var event models.Event
-	err = context.ShouldBindJSON(&event)
+	err := context.ShouldBindJSON(&event)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"Message": "Bad request"})
 		return
 	}
+
+	userId := context.GetInt64("userId")
+
 	event.UserId = userId
 	err = event.Save()
 	if err != nil {
@@ -68,11 +56,19 @@ func updateEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"Message": "Bad request."})
 		return
 	}
-	_, err = models.GetEventById(eventId)
+
+	userId := context.GetInt64("userId")
+	event, err := models.GetEventById(eventId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"Message": "Couldnt fetch id."})
 		return
 	}
+
+	if event.UserId != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{"Message": "Not authorized to update event"})
+		return
+	}
+
 	var updatedEvent models.Event
 	err = context.ShouldBindJSON(&updatedEvent)
 	if err != nil {
@@ -94,15 +90,22 @@ func deleteEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"Message": "Bad request."})
 		return
 	}
+
+	userId := context.GetInt64("userId")
 	event, err := models.GetEventById(eventId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"Message": "Couldnt fetch id."})
+		return
+	}
+	if event.UserId != userId{
+		context.JSON(http.StatusUnauthorized, gin.H{"Message": "Not authorized to delete event"})
 		return
 	}
 
 	err = event.Delete()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"Message": "Couldnt delete id."})
+		return
 	}
 
 	context.JSON(http.StatusOK, gin.H{"Message": "Successfully Deleted!"})

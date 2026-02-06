@@ -1,11 +1,11 @@
 POST http://localhost:8080/events 
 content-type: application/json
-authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5ekBnbWFpbC5jb20iLCJleHAiOjE3NzAzNjQ5NjgsInVzZXJJZCI6Mn0.EysP1OWDkHss40aWLr5E3WMJxHibpODxqx4qwPLpIKw
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5ekBnbWFpbC5jb20iLCJleHAiOjE3NzAzOTE2NTUsInVzZXJJZCI6MX0.eVeTnE7ibRzGrl26iQnGzSTfw5pJyHILEd9nAsrhTI4
 
 
 
 {
-    "name": "Python",
+    "name": "Python Language",
     "description": "Learning Go in depth",
     "Location": "Turkmenistan"
 }
